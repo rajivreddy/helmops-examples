@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  nginx:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2026-04-20T02:47:26.659974489Z"
+    description: A Helm chart for Kubernetes
+    digest: 03fd5008a8ed6f23604b4710c59266692d11af69427eb73dfef197446a98787c
+    name: nginx
+    type: application
+    urls:
+    - https://github.com/rajivreddy/helmops-examples/releases/download/nginx-0.1.0/nginx-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-04-20T02:47:26.65998225Z"
