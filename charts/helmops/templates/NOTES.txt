@@ -1,0 +1,68 @@
+{{- if .Values.helmops }}
+{{- $global := .Values.global }}
+{{ len .Values.helmops }} HelmOp resource(s) have been deployed.
+
+HELMOPS CREATED:
+{{- range .Values.helmops }}
+  - {{ .name }} (namespace: {{ .helmopNamespace | default $global.helmopNamespace | default "fleet-local" }})
+    Chart: {{ .helm.chart }}
+    Repository: {{ .helm.repo }}
+    Target Namespace: {{ .targetNamespace | default "default" }}
+    {{- if .targets }}
+    Clusters:
+      {{- range .targets }}
+      - {{ .name }} ({{ .clusterName }})
+      {{- end }}
+    {{- end }}
+{{- end }}
+
+COMMANDS:
+
+1. Check all HelmOps status:
+   kubectl get helmops -n {{ $global.helmopNamespace | default "fleet-local" }}
+
+2. Check specific HelmOp:
+{{- range .Values.helmops }}
+   kubectl describe helmop {{ .name }} -n {{ .helmopNamespace | default $global.helmopNamespace | default "fleet-local" }}
+{{- end }}
+
+3. Check Fleet bundles:
+   kubectl get bundles -n fleet-default
+
+4. View Fleet controller logs:
+   kubectl logs -n cattle-fleet-system -l app=fleet-controller
+
+{{- else }}
+HelmOp "{{ include "helmops.fullname" . }}" has been deployed to namespace "{{ include "helmops.namespace" . }}".
+
+DETAILS:
+  - Release Name: {{ include "helmops.releaseName" . }}
+  - Chart: {{ .Values.helm.chart }}
+  - Repository: {{ .Values.helm.repo }}
+  - Target Namespace: {{ .Values.targetNamespace }}
+
+{{- if .Values.targets }}
+
+TARGET CLUSTERS:
+{{- range .Values.targets }}
+  - {{ .name }} ({{ .clusterName }})
+{{- end }}
+{{- else }}
+
+WARNING: No target clusters configured. Add targets to deploy to clusters.
+{{- end }}
+
+COMMANDS:
+
+1. Check HelmOp status:
+   kubectl get helmops {{ include "helmops.fullname" . }} -n {{ include "helmops.namespace" . }}
+
+2. Describe HelmOp for details:
+   kubectl describe helmop {{ include "helmops.fullname" . }} -n {{ include "helmops.namespace" . }}
+
+3. Check Fleet bundles:
+   kubectl get bundles -n fleet-default
+
+4. View Fleet controller logs:
+   kubectl logs -n cattle-fleet-system -l app=fleet-controller
+{{- end }}

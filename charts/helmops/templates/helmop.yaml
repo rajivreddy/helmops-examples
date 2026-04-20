@@ -1,0 +1,127 @@
+{{- if .Values.helmops }}
+{{- $global := .Values.global }}
+{{- $chart := .Chart }}
+{{- $release := .Release }}
+{{- range $index, $helmop := .Values.helmops }}
+---
+apiVersion: fleet.cattle.io/v1alpha1
+kind: HelmOp
+metadata:
+  name: {{ $helmop.name }}
+  namespace: {{ $helmop.helmopNamespace | default $global.helmopNamespace | default "fleet-local" }}
+  labels:
+    helm.sh/chart: {{ printf "%s-%s" $chart.Name $chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+    app.kubernetes.io/name: {{ $helmop.name }}
+    app.kubernetes.io/instance: {{ $release.Name }}
+    {{- if $chart.AppVersion }}
+    app.kubernetes.io/version: {{ $chart.AppVersion | quote }}
+    {{- end }}
+    app.kubernetes.io/managed-by: {{ $release.Service }}
+    {{- with $global.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with $helmop.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- if or $global.annotations $helmop.annotations }}
+  annotations:
+    {{- with $global.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with $helmop.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  namespace: {{ $helmop.targetNamespace | default "default" }}
+  helm:
+    releaseName: {{ $helmop.helm.releaseName | default $helmop.name }}
+    {{- if $helmop.helm.chart }}
+    chart: {{ $helmop.helm.chart }}
+    {{- end }}
+    {{- if $helmop.helm.repo }}
+    repo: {{ $helmop.helm.repo }}
+    {{- end }}
+    {{- if $helmop.helm.version }}
+    version: {{ $helmop.helm.version | quote }}
+    {{- end }}
+    {{- with $helmop.helm.values }}
+    values:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with $helmop.helm.valuesFiles }}
+    valuesFiles:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  {{- if $helmop.targets }}
+  targets:
+    {{- range $helmop.targets }}
+    - name: {{ .name }}
+      clusterName: {{ .clusterName | quote }}
+      {{- if .helm }}
+      helm:
+        {{- with .helm.values }}
+        values:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .helm.valuesFiles }}
+        valuesFiles:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- else }}
+{{- /* Single HelmOp mode for backward compatibility */ -}}
+apiVersion: fleet.cattle.io/v1alpha1
+kind: HelmOp
+metadata:
+  name: {{ include "helmops.fullname" . }}
+  namespace: {{ include "helmops.namespace" . }}
+  labels:
+    {{- include "helmops.labels" . | nindent 4 }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  namespace: {{ .Values.targetNamespace }}
+  helm:
+    releaseName: {{ include "helmops.releaseName" . }}
+    {{- if .Values.helm.chart }}
+    chart: {{ .Values.helm.chart }}
+    {{- end }}
+    {{- if .Values.helm.repo }}
+    repo: {{ .Values.helm.repo }}
+    {{- end }}
+    {{- if .Values.helm.version }}
+    version: {{ .Values.helm.version | quote }}
+    {{- end }}
+    {{- with .Values.helm.values }}
+    values:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.helm.valuesFiles }}
+    valuesFiles:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  {{- if .Values.targets }}
+  targets:
+    {{- range .Values.targets }}
+    - name: {{ .name }}
+      clusterName: {{ .clusterName | quote }}
+      {{- if .helm }}
+      helm:
+        {{- with .helm.values }}
+        values:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .helm.valuesFiles }}
+        valuesFiles:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}

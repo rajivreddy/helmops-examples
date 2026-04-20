@@ -1,0 +1,98 @@
+# Default values for helmops chart
+# This is a YAML-formatted file.
+
+# Global settings applied to all HelmOps (can be overridden per helmop)
+global:
+  # Namespace where HelmOp resources will be created (Fleet management namespace)
+  helmopNamespace: fleet-default
+  # Additional labels for all HelmOp resources
+  labels: {}
+  # Additional annotations for all HelmOp resources
+  annotations: {}
+
+# List of HelmOp resources to create
+# Each item creates a separate HelmOp resource
+helmops: []
+# Example:
+# helmops:
+#   - name: nginx
+#     targetNamespace: default
+#     helm:
+#       releaseName: nginx
+#       chart: nginx
+#       repo: https://rajivreddy.github.io/helmops-examples/
+#     targets:
+#       - name: k3s
+#         clusterName: "k3s"
+#         helm:
+#           values:
+#             replicaCount: 1
+#
+#   - name: redis
+#     targetNamespace: redis-system
+#     helm:
+#       releaseName: redis
+#       chart: redis
+#       repo: https://charts.bitnami.com/bitnami
+#       version: "17.0.0"
+#     targets:
+#       - name: k3s
+#         clusterName: "k3s"
+#         helm:
+#           values:
+#             replica:
+#               replicaCount: 2
+
+# ============================================================
+# SINGLE HELMOP MODE (for backward compatibility)
+# Use these fields when deploying a single HelmOp
+# These are ignored if 'helmops' list is not empty
+# ============================================================
+
+# HelmOp resource name
+name: ""
+
+# Namespace where HelmOp resource will be created (Fleet management namespace)
+# This is typically fleet-default or fleet-local
+helmopNamespace: fleet-default
+
+# Target namespace where Helm release will be deployed on target clusters
+targetNamespace: default
+
+# Helm chart configuration
+helm:
+  # Helm release name
+  releaseName: ""
+  # Chart name in the repository
+  chart: ""
+  # Helm repository URL
+  repo: ""
+  # Chart version (optional - uses latest if not specified)
+  version: ""
+  # Default values applied to all targets
+  values: {}
+  # Values files to use (list of file paths)
+  valuesFiles: []
+
+# Target clusters configuration
+# Each target specifies a cluster and optional value overrides
+targets: []
+# Example:
+# targets:
+#   - name: dev-cluster
+#     clusterName: "dev"
+#     helm:
+#       values:
+#         replicaCount: 1
+#   - name: prod-cluster
+#     clusterName: "production"
+#     helm:
+#       values:
+#         replicaCount: 3
+
+# Additional labels to add to the HelmOp resource
+labels: {}
+
+# Additional annotations to add to the HelmOp resource
+annotations: {}
+

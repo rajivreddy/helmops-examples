@@ -1,0 +1,29 @@
+# Example values for deploying nginx using HelmOp
+# Usage: helm install nginx-helmop charts/helmops -f charts/helmops/examples/nginx-values.yaml
+
+name: nginx
+
+helmopNamespace: fleet-default
+targetNamespace: default
+
+helm:
+  releaseName: nginx
+  chart: nginx
+  repo: https://rajivreddy.github.io/helmops-examples/
+
+targets:
+  - name: k3s
+    clusterName: "k3s"
+    helm:
+      values:
+        replicaCount: 1
+
+  - name: prom-agent
+    clusterName: "prom-agent"
+    helm:
+      values:
+        image:
+          tag: "alpine3.23"
+        replicaCount: 2
+        service:
+          type: NodePort

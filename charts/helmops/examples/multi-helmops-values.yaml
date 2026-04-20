@@ -1,0 +1,69 @@
+# Example: Multiple HelmOps from a single values file
+# Usage: helm install multi-app charts/helmops -f charts/helmops/examples/multi-helmops-values.yaml
+
+global:
+  helmopNamespace: fleet-default
+  labels:
+    managed-by: helmops-chart
+  annotations:
+    description: "Managed by HelmOps chart"
+
+helmops:
+  # First HelmOp - nginx deployment
+  - name: nginx
+    targetNamespace: default
+    helm:
+      releaseName: nginx
+      chart: nginx
+      repo: https://rajivreddy.github.io/helmops-examples/
+    targets:
+      - name: k3s
+        clusterName: "k3s"
+        helm:
+          values:
+            replicaCount: 1
+      - name: prom-agent
+        clusterName: "prom-agent"
+        helm:
+          values:
+            image:
+              tag: "alpine3.23"
+            replicaCount: 2
+            service:
+              type: NodePort
+
+  # Second HelmOp - redis deployment
+  - name: redis
+    targetNamespace: redis-system
+    helm:
+      releaseName: redis
+      chart: redis
+      repo: https://charts.bitnami.com/bitnami
+      version: "17.0.0"
+    labels:
+      app-type: cache
+    targets:
+      - name: k3s
+        clusterName: "k3s"
+        helm:
+          values:
+            architecture: standalone
+            auth:
+              enabled: false
+
+  # Third HelmOp - prometheus deployment
+  - name: prometheus
+    targetNamespace: monitoring
+    helm:
+      releaseName: prometheus
+      chart: prometheus
+      repo: https://prometheus-community.github.io/helm-charts
+      version: "25.0.0"
+    targets:
+      - name: prom-agent
+        clusterName: "prom-agent"
+        helm:
+          values:
+            server:
+              persistentVolume:
+                enabled: false

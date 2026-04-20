@@ -1,0 +1,25 @@
+apiVersion: v2
+name: helmops
+description: A Helm chart for deploying HelmOp resources to Rancher Fleet
+
+type: application
+
+# Chart version - increment for chart changes
+version: 0.1.0
+
+# App version - version of HelmOp CRD being used
+appVersion: "v1alpha1"
+
+keywords:
+  - fleet
+  - rancher
+  - helmops
+  - gitops
+
+home: https://fleet.rancher.io/
+sources:
+  - https://github.com/rancher/fleet
+
+maintainers:
+  - name: helmops-examples
+    url: https://github.com/rajivreddy/helmops-examples
