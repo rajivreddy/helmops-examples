@@ -1,5 +1,27 @@
 apiVersion: v1
 entries:
+  helmops:
+  - apiVersion: v2
+    appVersion: v1alpha1
+    created: "2026-04-20T03:52:55.783205119Z"
+    description: A Helm chart for deploying HelmOp resources to Rancher Fleet
+    digest: 76896530ac3f2d373e791a571f0cc17a59c16592e95cffe071e6e98a7d2395f9
+    home: https://fleet.rancher.io/
+    keywords:
+    - fleet
+    - rancher
+    - helmops
+    - gitops
+    maintainers:
+    - name: helmops-examples
+      url: https://github.com/rajivreddy/helmops-examples
+    name: helmops
+    sources:
+    - https://github.com/rancher/fleet
+    type: application
+    urls:
+    - https://github.com/rajivreddy/helmops-examples/releases/download/helmops-0.1.0/helmops-0.1.0.tgz
+    version: 0.1.0
   nginx:
   - apiVersion: v2
     appVersion: 1.16.0
@@ -11,4 +33,4 @@ entries:
     urls:
     - https://github.com/rajivreddy/helmops-examples/releases/download/nginx-0.1.0/nginx-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-20T02:47:26.65998225Z"
+generated: "2026-04-20T03:52:55.928108669Z"
