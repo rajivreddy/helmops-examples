@@ -1,0 +1,16 @@
+targetCustomizations:
+- name: k3s
+  helm:
+    values:
+      replicaCount: 1
+  clusterSelector:
+    matchLabels:
+      name: k3s
+
+- name: prom-agent
+  helm:
+    values:
+      replicaCount: 2
+  clusterSelector:
+    matchLabels:
+      name: prom-agent
